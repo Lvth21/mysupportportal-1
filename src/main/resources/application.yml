@@ -1,0 +1,29 @@
+jwt:
+  secret: '[a-zA-Z0-9._]^+$Guidelines89797987forAlphabeticalArraNumeralsandOtherSymbo$'
+
+
+server:
+  port: 8090
+  error:
+#    whitelabel:
+#      enabled: false
+    path: /error
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/supportportal?createDatabaseIfNotExist=true
+    password: 1234
+    username: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+#  web:
+#    resources:
+#      add-mappings: false
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+  
