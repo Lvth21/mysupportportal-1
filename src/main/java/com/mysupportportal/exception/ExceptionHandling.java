@@ -31,104 +31,123 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ExceptionHandling implements ErrorController {
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
-    private static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
-    private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
-    private static final String INCORRECT_CREDENTIALS = "Username / password incorrect. Please try again";
-    private static final String ACCOUNT_DISABLED = "Your account has been disabled. If this is an error, please contact administration";
-    private static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
-    private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
-    public static final String ERROR_PATH = "/error";
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
+	private static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
+	private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
+	private static final String INCORRECT_CREDENTIALS = "Username / password incorrect. Please try again";
+	private static final String ACCOUNT_DISABLED = "Your account has been disabled. If this is an error, please contact administration";
+	private static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
+	private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
+	public static final String ERROR_PATH = "/error";
 
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<HttpResponse> accountDisabledException() {
-        return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
-    }
+	/*
+	 * The class defines one method, accountDisabledException, which is annotated
+	 * with @ExceptionHandler(DisabledException.class). This annotation is used to
+	 * handle specific exceptions, in this case the DisabledException.
+	 * 
+	 * The method creates and returns a ResponseEntity<HttpResponse> object that
+	 * wraps a custom HttpResponse object. This will be sent as the response to the
+	 * client when the DisabledException is thrown.
+	 * 
+	 * In summary, this class is used to handle DisabledException thrown by the
+	 * application and return a custom HTTP response to the client. If a
+	 * DisabledException is thrown, this class will catch it and return an
+	 * HttpResponse with a status of BAD_REQUEST and a message of ACCOUNT_DISABLED.
+	 */
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<HttpResponse> badCredentialsException() {
-        return createHttpResponse(BAD_REQUEST, INCORRECT_CREDENTIALS);
-    }
+	@ExceptionHandler(DisabledException.class)
+	public ResponseEntity<HttpResponse> accountDisabledException() {
+		return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
+	}
+	
+	
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<HttpResponse> accessDeniedException() {
-        return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
-    }
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<HttpResponse> badCredentialsException() {
+		return createHttpResponse(BAD_REQUEST, INCORRECT_CREDENTIALS);
+	}
 
-    @ExceptionHandler(LockedException.class)
-    public ResponseEntity<HttpResponse> lockedException() {
-        return createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
-    }
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<HttpResponse> accessDeniedException() {
+		return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
+	}
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
-        return createHttpResponse(UNAUTHORIZED, exception.getMessage());
-    }
+	@ExceptionHandler(LockedException.class)
+	public ResponseEntity<HttpResponse> lockedException() {
+		return createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
+	}
 
-    @ExceptionHandler(EmailExistException.class)
-    public ResponseEntity<HttpResponse> emailExistException(EmailExistException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+	@ExceptionHandler(TokenExpiredException.class)
+	public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
+		return createHttpResponse(UNAUTHORIZED, exception.getMessage());
+	}
 
-    @ExceptionHandler(UsernameExistException.class)
-    public ResponseEntity<HttpResponse> usernameExistException(UsernameExistException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+	@ExceptionHandler(EmailExistException.class)
+	public ResponseEntity<HttpResponse> emailExistException(EmailExistException exception) {
+		return createHttpResponse(BAD_REQUEST, exception.getMessage());
+	}
 
-    @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<HttpResponse> emailNotFoundException(EmailNotFoundException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+	@ExceptionHandler(UsernameExistException.class)
+	public ResponseEntity<HttpResponse> usernameExistException(UsernameExistException exception) {
+		return createHttpResponse(BAD_REQUEST, exception.getMessage());
+	}
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<HttpResponse> userNotFoundException(UserNotFoundException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+	@ExceptionHandler(EmailNotFoundException.class)
+	public ResponseEntity<HttpResponse> emailNotFoundException(EmailNotFoundException exception) {
+		return createHttpResponse(BAD_REQUEST, exception.getMessage());
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<HttpResponse> userNotFoundException(UserNotFoundException exception) {
+		return createHttpResponse(BAD_REQUEST, exception.getMessage());
+	}
 
 //    @ExceptionHandler(NoHandlerFoundException.class)
 //    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
 //        return createHttpResponse(BAD_REQUEST, "There is no mapping for this URL");
 //    }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-        HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
-        return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
-    }
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+		HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
+		return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
+	}
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
-        LOGGER.error(exception.getMessage());
-        return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-    }
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
+		LOGGER.error(exception.getMessage());
+		return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+	}
 
-    @ExceptionHandler(NotAnImageFileException.class)
-    public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
-        LOGGER.error(exception.getMessage());
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+	@ExceptionHandler(NotAnImageFileException.class)
+	public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
+		LOGGER.error(exception.getMessage());
+		return createHttpResponse(BAD_REQUEST, exception.getMessage());
+	}
 
-    @ExceptionHandler(NoResultException.class)
-    public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
-        LOGGER.error(exception.getMessage());
-        return createHttpResponse(NOT_FOUND, exception.getMessage());
-    }
+	@ExceptionHandler(NoResultException.class)
+	public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
+		LOGGER.error(exception.getMessage());
+		return createHttpResponse(NOT_FOUND, exception.getMessage());
+	}
 
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<HttpResponse> iOException(IOException exception) {
-        LOGGER.error(exception.getMessage());
-        return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
-    }
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<HttpResponse> iOException(IOException exception) {
+		LOGGER.error(exception.getMessage());
+		return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
+	}
+
 //we are goin to use this, every time we are goin to return an http response to the user
-    private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
-        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus,
-                httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
-    }
-    
-    @RequestMapping(ERROR_PATH)
-    public ResponseEntity<HttpResponse> notFound404() {
-        return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
-    }
+	private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
+		return new ResponseEntity<>(
+				new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message),
+				httpStatus);
+	}
+
+	@RequestMapping(ERROR_PATH)
+	public ResponseEntity<HttpResponse> notFound404() {
+		return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
+	}
 
 }

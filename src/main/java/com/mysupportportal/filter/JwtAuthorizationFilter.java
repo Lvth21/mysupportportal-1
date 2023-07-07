@@ -31,7 +31,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 	public JwtAuthorizationFilter(JWTTokenProvider jwtTokenProvider) {
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
-
+/*
+ * The doFilterInternal() method is typically used to perform some pre-processing 
+ * on the request and response objects before they are passed to the next filter 
+ * in the chain. This pre-processing may include tasks such as logging, validating 
+ * the request, or modifying the request or response objects.
+ */
 
 
 	@Override//this method is going to fire every time a request comes in: we''ll make sure the token and user is valid and then set the user as authenticated
@@ -45,7 +50,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			response.setStatus(HttpStatus.OK.value());
 		}else {//here we are going to take the token, that is in the header
 			String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-			if(authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX) ) {
+			if(authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX) ) {//"Bearer will be set in the front end;
 				//if the auth is null or the header doesnt start with Bearer than this is not the auth header we are looking for
 				filterChain.doFilter(request, response);
 				return;
@@ -63,4 +68,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);//Causes the next filter in the chain to be invoked, or if the callingfilter is the last filter in the chain, 
         										//causes the resource at the end ofthe chain to be invoked.
     }
+	
+	/*
+	 * Once the pre-processing has been completed, 
+	 * the filterChain.doFilter(request, response) method is used 
+	 * to pass the request and response objects to the next filter in the chain. 
+	 * This allows the next filter to perform its own processing on the request 
+	 * and response objects. The next filter can be another instance of the same 
+	 * filter or it could be another filter in the chain.
+
+It is important to note that the calling filterChain.doFilter(request, response)
+ at the end of the doFilterInternal() method is crucial, it allows the request to 
+ continue the processing, if this method is not called, the request processing will
+  be stopped, and the response will not be sent back to the client.
+	 */
 }

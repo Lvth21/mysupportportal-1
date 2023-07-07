@@ -20,6 +20,16 @@ import com.mysupportportal.domain.HttpResponse;
 
 @Component
 public class JwtAccessDeniedHanlder implements AccessDeniedHandler {
+	/*
+	 * This is a Java class that implements the AccessDeniedHandler interface. 
+	 * The AccessDeniedHandler interface is part of the Spring Security framework
+	 *  and it provides a way to handle access denied exceptions that occur when 
+	 *  a user tries to access a protected resource without the necessary permissions.
+	 *  
+	 *  The class implements a single method, handle(HttpServletRequest request, 
+	 *  HttpServletResponse response, AccessDeniedException exception), which is 
+	 *  called when an access denied exception occurs.
+	 */
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,

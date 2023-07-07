@@ -8,6 +8,15 @@ server:
 #    whitelabel:
 #      enabled: false
     path: /error
+#In this case, the error path is set to '/error', 
+#which means that when an error occurs, the application 
+#will redirect the client's request to the '/error' endpoint. 
+#The application can then handle the error and return a 
+#response to the client. This is useful for handling and 
+#returning custom error messages or for providing a custom 
+#error page for the client.
+
+
 
 spring:
   datasource:

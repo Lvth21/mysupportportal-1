@@ -39,7 +39,10 @@ public class JWTTokenProvider {
 				.withAudience(GET_ARRAYS_ADMINISTRATION) //the audience i defined(administration)
 				.withIssuedAt(new Date())
 				.withSubject(userPrincipal.getUsername())//unique identifier for the user
-				.withArrayClaim(AUTHORITIES, claims)
+				.withArrayClaim(AUTHORITIES, claims)// is a method from JWT library to add a custom claim called "authorities" to the JWT token, 	
+//where claims is an array of strings. The custom claim is an additional piece of information that can be stored in the JWT token.
+//In this specific case, the method is adding an array of claims, which represents the granted authorities of the user, 
+//	to the JWT token. These authorities will be encoded into the JWT and can be used by the recipient to determine the permissions of the user.
 				.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.sign(Algorithm.HMAC512(secret.getBytes()));
 	}
@@ -54,11 +57,19 @@ public class JWTTokenProvider {
 	public Authentication getAuthentication (String username, List<GrantedAuthority> authorities, HttpServletRequest request) {
 		
 		UsernamePasswordAuthenticationToken userPasswordAuthToken = new 
+//A null value, which represents the password of the user, since the authentication has already been performed and the token has been verified
 				UsernamePasswordAuthenticationToken(username, null, authorities);
+		//Then it sets the details of the authentication token, by creating a new instance of the WebAuthenticationDetailsSource
+		//class and calling the buildDetails(request) method on it,
+		//passing in the request parameter, to extract information from the request to use as the details of the token.
 		userPasswordAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				
 		return userPasswordAuthToken;//gets the authentication once you verified the token (this user is authenticated, process the request!)
-		
+		/*
+		 * it creates an instance of the UsernamePasswordAuthenticationToken class,
+		 * which implements the Authentication interface and sets the details of the token 
+		 * with the request parameter and returns it
+		 */
 	}
 
 	//check if the token is valid:
@@ -67,7 +78,7 @@ public class JWTTokenProvider {
 		
 		return StringUtils.isNotEmpty(username) && !isTokenExpired(verifier, token);
 	}
-	
+//returns the value of the "sub" claim of the token. This claim is the subject of the JWT token, usually an user ID or an username.
 	public String getSubject(String token) {
 		JWTVerifier verifier = getJWTVerifier();
 		return verifier.verify(token).getSubject();
@@ -76,16 +87,19 @@ public class JWTTokenProvider {
 	
 	
 	private boolean isTokenExpired(JWTVerifier verifier, String token) {
+//.verify return a DecodedJWT Performs the verification against the given Token.
 		Date expiration = verifier.verify(token).getExpiresAt();
 		return expiration.before(new Date());
 	}
 
 	private String[] getClaimsFromToken(String token) {
 		JWTVerifier verifier = getJWTVerifier();
-		return verifier.verify(token)//Performs the verification against the given Token. Return a verified and decoded JWT.
+		return verifier.verify(token)//Performs the verification against the given Token. Return a verified and DecodedJWT.
 				.getClaim(AUTHORITIES).asArray(String.class);
 	}
 
+	//This creates a new verifier that will check that the token is signed with the provided algorithm and
+	//will check that the token has an "iss" claim with the value of `GET_ARRAYS_LLC`
 	private JWTVerifier getJWTVerifier() {
 		
 		JWTVerifier verifier;
@@ -109,6 +123,9 @@ public class JWTTokenProvider {
 		}
 		
 		return authorities.toArray(new String[0]);
+//		So passing new String[0] as an argument to the toArray() method is saying 
+//		that the returned array should be of the type String[] but the size of the
+//		array will be determined by the size of the list, which is the number of authorities the user has.
 	}
 
 }

@@ -48,6 +48,20 @@ import com.mysupportportal.service.EmailService;
 import com.mysupportportal.service.LoginAttemptService;
 import com.mysupportportal.service.UserService;
 
+
+/*
+ * @Transactional is a Spring annotation that is used to 
+ * mark a method or class as participating in a transaction. 
+ * When a method is annotated with @Transactional, Spring will 
+ * automatically create a transaction around the method's execution. 
+ * This means that any database operations (such as inserting, 
+ * updating, or deleting records) that are performed within the 
+ * method will be part of the same transaction. If the method 
+ * completes successfully, the transaction will be committed 
+ * and the changes will be made permanent in the database. If 
+ * an exception is thrown, the transaction will be rolled back 
+ * and the changes will be undone.
+ */
 @Service
 @Transactional
 @Qualifier("userDetailsService")
@@ -176,7 +190,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 LOGGER.info(DIRECTORY_CREATED + userFolder);
             }
             Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + DOT + JPG_EXTENSION));
-            Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXTENSION), REPLACE_EXISTING);
+            Files.copy(profileImage.getInputStream(), userFolder
+            		.resolve(user.getUsername() + DOT + JPG_EXTENSION), REPLACE_EXISTING);
             user.setProfileImageUrl(setProfileImageUrl(user.getUsername()));
             userRepository.save(user);
             LOGGER.info(FILE_SAVED_IN_FILE_SYSTEM + profileImage.getOriginalFilename());
@@ -242,6 +257,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username)
 				.toUriString();
 	}
+	/*
+	 * The setProfileImageUrl() method is responsible for creating an URL for the user's profile image. 
+	 * It uses the ServletUriComponentsBuilder.fromCurrentContextPath() method to get the current context 
+	 * path, then appends the path for the user's image using path() method, and concatenating the username 
+	 * and file extension .jpg. Then, it uses the toUriString() method to convert the URL to a string.
+	 */
 
 	private String setProfileImageUrl(String username) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PATH + username + FORWARD_SLASH
